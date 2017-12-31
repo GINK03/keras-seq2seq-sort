@@ -15,8 +15,9 @@ import concurrent.futures
 
 def _map(arr):
   key, names = arr
-  db = dbm.open("16-parsed_{key}.dbm".format(key=key), "c")
+  db = dbm.open("htmls/16-parsed_{key}.dbm".format(key=key), "c")
   for name in names:
+    print(name)
     soup = bs4.BeautifulSoup(open(name).read())
     [s.extract() for s in soup('script')]
     
@@ -32,6 +33,8 @@ def _map(arr):
       continue
     
     date = soup.find("meta", property="article:published_time")
+    if date is None:
+      continue
     print(date.get("content"))
     body = soup.find("div", {"id":"article-body-inner"})
     #print(name.replace("_","/"))
@@ -51,5 +54,6 @@ for index, name in enumerate(glob.glob("htmls/*")):
   arrs[key].append( name )
 arrs = [(key, names) for key, names in arrs.items() ]
 #_map(arrs[0])
+#sys.exit()
 with concurrent.futures.ProcessPoolExecutor(max_workers=16) as exe:
   exe.map(_map, arrs)
