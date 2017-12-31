@@ -17,6 +17,8 @@ import gzip
 import pickle
 
 import copy
+
+import re
 def url_fix(urls):
   furls = set()
   for url in urls:
@@ -37,6 +39,10 @@ def url_fix(urls):
 def map1(arr):
   index, url = arr
   save_name = 'htmls/' + url.replace('/', '_')
+  '''max length 128'''
+  save_name = save_name[:128]
+  if re.search(r"^https://", url) is None:
+    return set()
   if os.path.exists(save_name) is True:
     return set()
   print( 'now url', url ) 

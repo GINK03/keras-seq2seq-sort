@@ -11,6 +11,8 @@ import sys
 import pickle
 
 import gzip
+
+import re
 files = glob.glob('htmls/*')
 size = len(files)
 
@@ -32,7 +34,7 @@ def _map(arr):
     except Exception:
       continue
     
-    if 'http://toyokeizai.net/' not in url:
+    if re.search(r'^http://toyokeizai.net/', url) is None:
       continue
 
     f.write( url + '\n' ) 

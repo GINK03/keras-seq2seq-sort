@@ -8,6 +8,7 @@ import dbm
 
 import pickle
 
+import re
 
 import concurrent.futures
 
