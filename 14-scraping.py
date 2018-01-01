@@ -41,7 +41,7 @@ def map1(arr):
   save_name = 'htmls/' + url.replace('/', '_')
   '''max length 128'''
   save_name = save_name[:128]
-  if re.search(r"^https://", url) is None:
+  if re.search(r"^http://", url) is None:
     return set()
   if os.path.exists(save_name) is True:
     return set()
@@ -49,13 +49,15 @@ def map1(arr):
   headers = {'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'}
   try:
     r = requests.get(url, headers=headers)
-  except Exception:
+  except Exception as ex:
+    print(ex)
     return set()
   html = r.text
   #print(html)
   try:
     open( save_name, 'w' ).write( html )  
-  except OSError:
+  except OSError as ex:
+    print(ex)
     return set()
   try:
     soup = bs4.BeautifulSoup(r.text)
@@ -65,6 +67,7 @@ def map1(arr):
       urls.add(url)
     return url_fix(urls)
   except Exception as ex:
+    print(ex)
     return set()
 
 urls = {'http://toyokeizai.net/'}
@@ -75,7 +78,7 @@ while True:
   arrs = [(index,url) for index,url in enumerate(urls)]
   
   nexts = set()
-  with concurrent.futures.ProcessPoolExecutor(max_workers=32) as exe:
+  with concurrent.futures.ProcessPoolExecutor(max_workers=16) as exe:
     for urls in exe.map(map1, arrs):
       for url in urls:
         nexts.add(url)
@@ -84,3 +87,4 @@ while True:
   #    nexts.add(url) 
   print(nexts)
   urls = copy.copy(nexts)
+  #sys.exit()

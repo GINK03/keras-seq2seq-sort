@@ -23,7 +23,10 @@ def _map(arr):
     return
 
   print('now iter', index, '/', size)
-  soup = bs4.BeautifulSoup( open(name).read() )
+  try:
+    soup = bs4.BeautifulSoup( open(name).read(), "lxml" )
+  except Exception as ex:
+    return
  
   f = open(link_name, 'w')
   for a in soup.find_all('a', href=True):
@@ -33,7 +36,7 @@ def _map(arr):
         url = 'http://toyokeizai.net' + url
     except Exception:
       continue
-    
+    #print(url)  
     if re.search(r'^http://toyokeizai.net/', url) is None:
       continue
 
