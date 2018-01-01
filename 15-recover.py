@@ -50,6 +50,7 @@ if '--map1' in sys.argv:
 if '--fold1' in sys.argv:
   urls = set()
   for index, name in enumerate(glob.glob('links/*')):
-    print('now iter', index )
+    if index%1000 == 0:
+      print('now iter', index )
     [urls.add(url) for url in open(name).read().split('\n')]
   open('urls.pkl.gz', 'wb').write( gzip.compress(pickle.dumps(urls)) )

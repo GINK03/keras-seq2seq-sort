@@ -41,7 +41,7 @@ def map1(arr):
   save_name = 'htmls/' + url.replace('/', '_')
   '''max length 128'''
   save_name = save_name[:128]
-  if re.search(r"^http://", url) is None:
+  if re.search(r"^http://toyokeizai.net", url) is None:
     return set()
   if os.path.exists(save_name) is True:
     return set()
@@ -78,7 +78,7 @@ while True:
   arrs = [(index,url) for index,url in enumerate(urls)]
   
   nexts = set()
-  with concurrent.futures.ProcessPoolExecutor(max_workers=16) as exe:
+  with concurrent.futures.ProcessPoolExecutor(max_workers=24) as exe:
     for urls in exe.map(map1, arrs):
       for url in urls:
         nexts.add(url)
