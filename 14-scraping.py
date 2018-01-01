@@ -89,3 +89,5 @@ while True:
   print(nexts)
   urls = copy.copy(nexts)
   #sys.exit()
+  if urls == set():
+    break
