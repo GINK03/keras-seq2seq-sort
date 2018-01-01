@@ -16,7 +16,12 @@ for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
   print(name)
   db = dbm.open(name)
   for key in db.keys():
-    obj = pickle.loads(db[key])
+    try:
+      obj = pickle.loads(db[key])
+    except KeyError as ex:
+      continue
+    except UnicodeDecodeError as ex:
+      continue
     #print(obj)
     subtitle = obj["subtitle"]
     terms = m.parse(obj["body"]).strip()

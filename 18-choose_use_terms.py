@@ -21,7 +21,10 @@ max_tfidfs = {}
 for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
   db = dbm.open(name)
   for key in db.keys():
-    obj = pickle.loads(db[key])
+    try:
+      obj = pickle.loads(db[key])
+    except Exception as ex:
+      continue
 
     sub_terms = m.parse(obj["subtitle"]).strip().split()
 
@@ -46,7 +49,7 @@ for term, tfidf in sorted(max_tfidfs.items(), key=lambda x:x[1]*-1):
     continue
   print(term, tfidf)
   use_terms.add(term)
-  if len(use_terms) >= 5000:
+  if len(use_terms) >= 20000:
     break
 
 open("use_terms.pkl", "wb").write( pickle.dumps(use_terms) )

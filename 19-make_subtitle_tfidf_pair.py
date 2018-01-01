@@ -27,7 +27,10 @@ pair = {} #dbm.open("pair.dbm", "c")
 for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
   db = dbm.open(name)
   for key in db.keys():
-    obj = pickle.loads(db[key])
+    try:
+      obj = pickle.loads(db[key])
+    except Exception as ex:
+      continue
 
     sub_terms = m.parse(obj["subtitle"]).strip().split()
 
@@ -38,7 +41,9 @@ for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
       tfidf[term] = math.log(freq+1.0) / term_docfreq[term]
     if tfidf == {}:
       continue
-
+    
+    if sub_terms == []:
+      continue # サブタイトルがない場合スキップ
     pair[key.decode()] = [sub_terms, tfidf]
 
 open("pair.json", "w").write( json.dumps(pair, indent=2, ensure_ascii=False) )
