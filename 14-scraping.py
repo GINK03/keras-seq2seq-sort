@@ -76,6 +76,7 @@ if '--resume' in sys.argv:
 
 while True:
   arrs = [(index,url) for index,url in enumerate(urls)]
+  random.shuffle(arrs)
   
   nexts = set()
   with concurrent.futures.ProcessPoolExecutor(max_workers=24) as exe:

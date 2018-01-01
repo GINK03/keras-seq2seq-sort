@@ -21,8 +21,9 @@ def _map(arr):
   link_name = 'links/' + name.split('/').pop().replace('/', '_') 
   if os.path.exists(link_name) is True:
     return
-
-  print('now iter', index, '/', size)
+  
+  if index%100 == 0:
+    print('now iter', index, '/', size)
   try:
     soup = bs4.BeautifulSoup( open(name).read(), "lxml" )
   except Exception as ex:
