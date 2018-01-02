@@ -23,6 +23,7 @@ def _map(arr):
       
       title_parts = soup.find("div", {"class":"title-parts"})
       if title_parts is None:
+        print(name.replace("_", "/"))
         continue
 
       title = title_parts.find("h1")

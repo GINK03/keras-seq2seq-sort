@@ -28,8 +28,10 @@ for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
 
 
     #sub_terms = m.parse(obj["subtitle"]).strip().split()
-
-    body_terms = dict(Counter(m.parse(obj["body"]).strip().split()))
+    try:
+      body_terms = dict(Counter(m.parse(obj["body"]).strip().split()))
+    except Exception as ex:
+      print(ex, obj)
 
     tfidf = {}
     for term, freq in body_terms.items():

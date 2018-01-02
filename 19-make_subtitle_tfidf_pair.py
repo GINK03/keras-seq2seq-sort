@@ -24,7 +24,7 @@ m = MeCab.Tagger("-Owakati")
 max_tfidfs = {}
 
 pair = {} #dbm.open("pair.dbm", "c")
-for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
+for name in glob.glob("parsed_dbms/*.dbm"):
   db = dbm.open(name)
   for key in db.keys():
     try:
@@ -33,9 +33,17 @@ for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
       continue
 
     #sub_terms = m.parse(obj["subtitle"]).strip().split()
-    sub_terms = m.parse(obj["subtitle"]).strip().split()
+    try:
+      sub_terms = m.parse(obj["title"]).strip().split()
+    except Exception as ex:
+      print(ex, key)
+      continue
 
-    body_terms = { term:freq for term, freq in dict(Counter(m.parse(obj["body"]).strip().split())).items() if term in use_terms }
+    try:
+      body_terms = { term:freq for term, freq in dict(Counter(m.parse(obj["body"]).strip().split())).items() if term in use_terms }
+    except Exception as ex:
+      print(ex, key)
+      continue
 
     tfidf = {}
     for term, freq in body_terms.items():

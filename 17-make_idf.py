@@ -22,10 +22,13 @@ for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
       continue
     except UnicodeDecodeError as ex:
       continue
-    #print(obj)
     title = obj["title"]
     subtitle = obj["subtitle"]
-    terms = m.parse(obj["body"]).strip()
+    try:
+      terms = m.parse(obj["body"]).strip()
+    except:
+      continue
+    print(key)
     for term in set(terms.split()):
       if term_docfreq.get(term) is None:
         term_docfreq[term] = 0.0
