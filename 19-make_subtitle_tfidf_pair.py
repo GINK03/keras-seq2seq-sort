@@ -32,6 +32,7 @@ for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
     except Exception as ex:
       continue
 
+    #sub_terms = m.parse(obj["subtitle"]).strip().split()
     sub_terms = m.parse(obj["subtitle"]).strip().split()
 
     body_terms = { term:freq for term, freq in dict(Counter(m.parse(obj["body"]).strip().split())).items() if term in use_terms }
@@ -45,6 +46,7 @@ for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
     if sub_terms == []:
       continue # サブタイトルがない場合スキップ
     pair[key.decode()] = [sub_terms, tfidf]
+    print(key.decode())
 
-open("pair.json", "w").write( json.dumps(pair, indent=2, ensure_ascii=False) )
+open("pair.json", "w").write( json.dumps(pair, indent=1, ensure_ascii=False) )
 

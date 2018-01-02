@@ -23,6 +23,7 @@ for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
     except UnicodeDecodeError as ex:
       continue
     #print(obj)
+    title = obj["title"]
     subtitle = obj["subtitle"]
     terms = m.parse(obj["body"]).strip()
     for term in set(terms.split()):

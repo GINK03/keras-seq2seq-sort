@@ -26,26 +26,18 @@ def _map(arr):
         continue
 
       title = title_parts.find("h1")
+      
       subtitle = title_parts.find("h2")
 
-      if title is None or subtitle is None:
-        os.remove(name)
-        continue
-      
       date = soup.find("meta", property="article:published_time")
-      if date is None:
-        continue
-      #print(date.get("content"))
+      
       body = soup.find("div", {"id":"article-body-inner"})
-      if body is None:
-        continue
       #print(name.replace("_","/"))
       key = name.split("/").pop().replace("_","/")
-      val = { "title": title.text, 
-              "subtitle": subtitle.text,
-              "date": date.get("content"),
-              "body": body.text.strip() }
-      #print(key,val)
+      val = { "title": title.text if title else None, 
+              "subtitle": subtitle.text if subtitle else None,
+              "date": date.get("content") if date else None,
+              "body": body.text.strip() if body else None }
       db[ key ] = pickle.dumps(val)
     except Exception as ex:
       print(ex)
