@@ -38,7 +38,7 @@ encode = Dense(4024, activation="relu")( enc )
 dec = RepeatVector(30)(encode)
 dec = Bi(GRU(2647, return_sequences=True))(dec)
 dec = TD(Dense(2647, activation='relu'))(dec)
-decode  = TD(Dense(2647, activation='relu'))(dec)
+decode  = TD(Dense(2647, activation='softmax'))(dec)
 
 
 model = Model(inputs=input_tensor, outputs=decode)
@@ -48,25 +48,38 @@ import pickle
 import gzip
 import numpy as np
 import glob
+import sys
 
-for i in range(500):
-  print(i)
-  for name in glob.glob("dataset/*"):
-    chunk = pickle.loads(gzip.decompress(open("dataset/000000000.pkl.gz", "rb").read()))
+if '--train' in sys.argv:
+  for i in range(500):
+    print(i)
+    for name in glob.glob("dataset/*"):
+      chunk = pickle.loads(gzip.decompress(open(name, "rb").read()))
 
-    X, y = [], []
-    for outputs, inputs in chunk:
-      inputs =  np.array(inputs)
-      inputs = inputs.reshape( (10, 2000) )
-      #print( inputs.shape )
-      X.append(inputs)
-      outputs = np.array(outputs) 
-      #print(outputs.shape)
-      y.append(outputs)
+      X, y = [], []
+      for outputs, inputs in chunk:
+        inputs =  np.array(inputs)
+        inputs = inputs.reshape( (10, 2000) )
+        #print( inputs.shape )
+        X.append(inputs)
+        outputs = np.array(outputs) 
+        #print(outputs.shape)
+        y.append(outputs)
 
-    X, y = np.array(X), np.array(y)
+      X, y = np.array(X), np.array(y)
 
-    batch_size = random.randint(16, 64)
-    model.fit(X, y, epochs=1, batch_size=batch_size)
-    #break
-  model.save_weights("models/{:09d}.h5".format(i))
+      batch_size = random.randint(3, 64)
+      model.fit(X, y, epochs=1, batch_size=batch_size)
+      #break
+    model.save_weights("models/{:09d}.h5".format(i))
+
+if '--predict' in sys.argv:
+  model_file = sorted(glob.glob('models/*.h5')).pop() 
+  print(model_file)
+  model.load_weights(model_file)
+
+  X, y = [], []
+  chunk = pickle.loads(gzip.decompress(open("dataset/000000000.pkl.gz", "rb").read()))
+  for outputs, inputs in chunk:
+    inputs =  np.array(inputs)
+    inputs = inputs.reshape( (10, 2000) )
