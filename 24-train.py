@@ -31,8 +31,8 @@ def CBRD(inputs, filters=64, kernel_size=3, droprate=0.5):
 input_tensor = Input( shape=(10, 2000) )
 
 enc = input_tensor
+enc = Dense(1024, activation="relu")( enc )
 enc = Flatten()(enc)
-enc = Dense(4024, activation="relu")( enc )
 encode = Dense(4024, activation="relu")( enc )
 
 dec = RepeatVector(30)(encode)
