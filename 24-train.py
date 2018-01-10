@@ -70,8 +70,8 @@ if '--train' in sys.argv:
 
       batch_size = random.randint(3, 64)
       model.fit(X, y, epochs=1, batch_size=batch_size)
-      #break
-    model.save_weights("models/{:09d}.h5".format(i))
+    if i%5 == 0:
+      model.save_weights("models/{:09d}.h5".format(i))
 
 if '--predict' in sys.argv:
   model_file = sorted(glob.glob('models/*.h5')).pop() 
