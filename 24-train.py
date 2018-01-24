@@ -39,12 +39,12 @@ enc = GN(0.1)(enc)
 encode = Dense(1024, activation="relu")( enc )
 
 dec = RepeatVector(30)(encode)
-dec = Bi(GRU(512, dropout=0.10, recurrent_dropout=0.25, return_sequences=True))(dec)
+dec = Bi(GRU(512, dropout=0.20, recurrent_dropout=0.25, return_sequences=True))(dec)
 dec = TD(Dense(2500, activation='relu'))(dec)
 dec = Dropout(0.3)(dec)
 dec = TD(Dense(2500, activation='relu'))(dec)
 dec = Dropout(0.3)(dec)
-decode  = TD(Dense(2581, activation='softmax'))(dec)
+decode  = TD(Dense(2626, activation='softmax'))(dec)
 
 
 model = Model(inputs=input_tensor, outputs=decode)

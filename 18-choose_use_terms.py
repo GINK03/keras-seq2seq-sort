@@ -25,8 +25,6 @@ for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
       obj = pickle.loads(db[key])
     except Exception as ex:
       continue
-
-
     #sub_terms = m.parse(obj["subtitle"]).strip().split()
     try:
       body_terms = dict(Counter(m.parse(obj["body"]).strip().split()))
@@ -45,7 +43,6 @@ for name in glob.glob("parsed_dbms/16-parsed_*.dbm"):
 数字を取り除き
 top5000をインプットとして利用する
 """
-
 use_terms = set()
 for term, tfidf in sorted(max_tfidfs.items(), key=lambda x:x[1]*-1):
   if re.search(r"^\d{1,}$", term) is not None:

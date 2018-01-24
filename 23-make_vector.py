@@ -55,7 +55,7 @@ if "--step2" in sys.argv:
 
     chunk.append( (output_base, input_base) ) 
     print(len(chunk))
-    if len(chunk) >= 1000:
+    if len(chunk) >= 2000:
       open("dataset/{:09d}.pkl.gz".format(count), 'wb').write( gzip.compress(pickle.dumps(chunk)) )
       count += 1
       chunk = []
