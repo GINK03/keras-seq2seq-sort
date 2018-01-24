@@ -16,6 +16,7 @@ from keras import optimizers
 from keras.preprocessing.image import ImageDataGenerator
 from keras.layers.normalization import BatchNormalization as BN
 from keras.layers.core import Dropout
+from keras.layers.noise import GaussianNoise as GN
 from keras.optimizers import SGD, Adam
 from keras import backend as K
 from keras.layers.wrappers import Bidirectional as Bi
@@ -32,13 +33,18 @@ input_tensor = Input( shape=(10, 2000) )
 
 enc = input_tensor
 enc = Dense(1024, activation="relu")( enc )
+enc = Dropout(0.3)(enc)
 enc = Flatten()(enc)
-encode = Dense(4024, activation="relu")( enc )
+enc = GN(0.1)(enc)
+encode = Dense(1024, activation="relu")( enc )
 
 dec = RepeatVector(30)(encode)
-dec = Bi(GRU(2647, return_sequences=True))(dec)
-dec = TD(Dense(2647, activation='relu'))(dec)
-decode  = TD(Dense(2647, activation='softmax'))(dec)
+dec = Bi(GRU(512, dropout=0.10, recurrent_dropout=0.25, return_sequences=True))(dec)
+dec = TD(Dense(2500, activation='relu'))(dec)
+dec = Dropout(0.3)(dec)
+dec = TD(Dense(2500, activation='relu'))(dec)
+dec = Dropout(0.3)(dec)
+decode  = TD(Dense(2581, activation='softmax'))(dec)
 
 
 model = Model(inputs=input_tensor, outputs=decode)

@@ -6,6 +6,7 @@ import glob
 
 import concurrent.futures
 
+import random
 base = "http://toyokeizai.net/articles/-/{}"
 
 
@@ -30,6 +31,6 @@ def _map1(i):
     print(ex)
 
 iss = [i for i in range(1, 203319)]
-
-with concurrent.futures.ProcessPoolExecutor(max_workers=64) as exe:
+iss = random.sample(iss, len(iss))
+with concurrent.futures.ProcessPoolExecutor(max_workers=32) as exe:
   exe.map(_map1, iss)
