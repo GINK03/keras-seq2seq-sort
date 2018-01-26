@@ -5,6 +5,7 @@
 - キャラクタレベル（文字粒度）で順序情報を失ったベクトル情報に対してベクトルを入力として、並び順が残っているもとの文章を構築しようと試みます
 
 ## 先行研究
+- [ORDER MATTERS: SEQUENCE TO SEQUENCE FOR SETS](https://arxiv.org/pdf/1511.06391.pdf)
 
 ## 文字列を破壊して並びなおす
 
