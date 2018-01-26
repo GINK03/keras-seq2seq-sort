@@ -58,22 +58,20 @@ if '--train' in sys.argv:
     print(model_file)
     model.load_weights(model_file)
   for i in range(500):
-    for name in sorted(glob.glob("dataset/*"))[:1]:
+    X, y = [], []
+    for name in random.sample(glob.glob("dataset/*"), 50):
       count += 1
       chunk = pickle.loads(gzip.decompress(open(name, "rb").read()))
 
-      X, y = [], []
       for outputs, inputs in chunk:
         X.append([inputs])
         y.append(outputs)
 
-        # pred = [index_char[np.argmax(ip)] for ip in outputs]
-        # print(pred)
-      X, y = np.array(X), np.array(y)
+    X, y = np.array(X), np.array(y)
 
-      batch_size = random.randint(64, 80)
-      model.optimizer = random.choice([SGD()])
-      model.fit(X, y, epochs=30, batch_size=batch_size)
+    batch_size = random.randint(64, 80)
+    model.optimizer = random.choice([Adam(), SGD()])
+    model.fit(X, y, epochs=30, batch_size=batch_size)
     if count%1 == 0:
       model.save_weights("models/{:09d}.h5".format(count))
       break
@@ -92,7 +90,18 @@ if '--predict' in sys.argv:
     X.append([inputs])
     y.append(outputs)
   X, y = np.array(X), np.array(y)
+
+  bs = []
+  for xv in X.tolist():
+    b = []
+    for index, x in enumerate(xv[0]):
+      #print(x)
+      if x == 1.0:
+        b.append( index_char[index] ) 
+    bs.append( b )
   yps = model.predict(X)
-  for yp in yps.tolist():
+  for yp, b in zip(yps.tolist(), bs):
     pred = "".join( [index_char[np.argmax(y)] for y in yp] )
+    print(b)
     print(pred)
+    print()
