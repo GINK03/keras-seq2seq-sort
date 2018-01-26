@@ -55,10 +55,10 @@ if "--step2" in sys.argv:
       input_base[ char_index[char] ] = freq
 
     chunk.append( (output_base, input_base) ) 
-    if len(chunk) >= 7000:
+    if len(chunk) >= 150:
       open("dataset/{:09d}.pkl.gz".format(count), 'wb').write( gzip.compress(pickle.dumps(chunk)) )
       count += 1
       chunk = []
-      break 
+      #break 
   #open("dataset/{:09d}.pkl.gz".format(count), 'wb').write( gzip.compress(pickle.dumps(chunk)) )
 

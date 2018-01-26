@@ -22,19 +22,13 @@ from keras import backend as K
 from keras.layers.wrappers import Bidirectional as Bi
 from keras.layers.wrappers import TimeDistributed as TD
 
-def CBRD(inputs, filters=64, kernel_size=3, droprate=0.5):
-  x = Conv1D(filters, kernel_size, padding='same',
-            kernel_initializer='random_normal')(inputs)
-  x = BatchNormalization()(x)
-  x = Activation('relu')(x)
-  return x
-
 input_tensor = Input( shape=(1, 3135) )
 
 enc = input_tensor
 enc = Flatten()(enc)
-enc = Dense(3135, activation='relu')(enc)
+#enc = Dense(3135, activation='relu')(enc)
 enc = RepeatVector(30)(enc)
+enc = GRU(256, return_sequences=True)(enc)
 
 dec = Bi(GRU(512, dropout=0.30, recurrent_dropout=0.25, return_sequences=True))(enc)
 dec = TD(Dense(3000, activation='relu'))(dec)
@@ -53,22 +47,12 @@ import numpy as np
 import glob
 import sys
 
-class epoch:
-  def __init__(self):
-    self.stat = [50, 30, 20, 10, 1]
-  def get(self):
-    try:  
-      return self.stat.pop(0)
-    except Exception as ex:
-      return 1
-
 if '--train' in sys.argv:
   char_index = json.loads(open('char_index.json').read())
   char_index["<EOS>"] = len(char_index)
   index_char = {index:char for char, index in char_index.items()}
  
   count = 0
-  ep = epoch()
   if '--resume' in sys.argv:
     model_file = sorted(glob.glob('models/*.h5')).pop() 
     print(model_file)
@@ -88,10 +72,11 @@ if '--train' in sys.argv:
       X, y = np.array(X), np.array(y)
 
       batch_size = random.randint(64, 80)
-      model.optimizer = random.choice([Adam()])
-      model.fit(X, y, epochs=50, batch_size=batch_size)
+      model.optimizer = random.choice([SGD()])
+      model.fit(X, y, epochs=30, batch_size=batch_size)
     if count%1 == 0:
       model.save_weights("models/{:09d}.h5".format(count))
+      break
 
 if '--predict' in sys.argv:
   char_index = json.loads(open('char_index.json').read())
@@ -102,7 +87,7 @@ if '--predict' in sys.argv:
   model.load_weights(model_file)
 
   X, y = [], []
-  chunk = pickle.loads(gzip.decompress(open("dataset/000000000.pkl.gz", "rb").read()))
+  chunk = pickle.loads(gzip.decompress(open(sorted(glob.glob("dataset/000000001.pkl.gz")).pop(), "rb").read()))
   for outputs, inputs in chunk:
     X.append([inputs])
     y.append(outputs)
