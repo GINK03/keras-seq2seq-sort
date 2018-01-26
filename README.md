@@ -18,26 +18,73 @@
 - Encoderの入力を行いベクトル化して、Decoderで元の並びを推定します
 
 ## ネットワーク
+なんどか試してうまくいったモデルを使用したいと思います
 ```python
-input_tensor = Input( shape=(1, 3135) )
-
 enc = input_tensor
 enc = Flatten()(enc)
-enc = Dense(3135, activation='relu')(enc)
 enc = RepeatVector(30)(enc)
+enc = GRU(256, return_sequences=True)(enc)
 
-dec = Bidirection(GRU(512, dropout=0.30, recurrent_dropout=0.25, return_sequences=True))(enc)
-dec = TimeDistribute(Dense(3000, activation='relu'))(dec)
+dec = Bi(GRU(512, dropout=0.30, recurrent_dropout=0.25, return_sequences=True))(enc)
+dec = TD(Dense(3000, activation='relu'))(dec)
 dec = Dropout(0.5)(dec)
-dec = TimeDistribute(Dense(3000, activation='relu'))(dec)
+dec = TD(Dense(3000, activation='relu'))(dec)
 dec = Dropout(0.1)(dec)
-decode  = TimeDistribute(Dense(3135, activation='softmax'))(dec)
+decode  = TD(Dense(3135, activation='softmax'))(dec)
+
+model = Model(inputs=input_tensor, outputs=decode)
+model.compile(loss='categorical_crossentropy', optimizer='adam')
 ```
 
 ## 前処理
+**東洋経済さんのコンテンツをスクレイピングします**
+```console
+$ python3 12-scan.py
+```
+
+**スクレイピングしたhtml情報を解析してテキスト情報を取り出します**
+```console
+$ python3 16-parse-html.py
+```
+
+**テキスト情報とベクトル情報のペアを作ります**
+```console
+$ python3 19-make_title_boc_pair.py 
+```
+
+**機械学習できる数字のベクトル情報に変換します**
+```console
+$ python3 23-make_vector.py 
+```
 
 ## 学習
+**学習を行います**
+（データサイズが巨大なので、128GByte程度のメインメモリが必要になります）
+```console
+$ python3 24-train.py --train
+...
+```
+categorical_crossentropyの損失が0.3程度に下がると、ある程度の予想が可能にまります  
+GTX1060で三日程度必要でした  
 
 ## 評価
+入力に用いた順番が崩された情報と、それらを入力に、並び替えてそれらしい文字のペアはこのようになります  
+```console
+入力 ['､', 'が', 'ル', 'ダ', '子', 'を', '日', '銀', '本', '団', '上', 'メ', '男', '定', '体', '以', '確', '球', '卓']
+出力 卓球男子団体､日本が銀メダ以以上を確定<EOS>
+
+入力 ['は', 'い', 'リ', 'た', 'ャ', 'ル', '界', 'し', 'に', 'て', '戦', '由', '表', 'シ', '挑', '自', '限', '現']
+出力 シャルリは表現の自由の限界に挑戦していた<EOS>
+
+入力 ['｢', 'は', '｣', 'た', '国', 'と', 'に', 'る', '消', 'え', '攻', '米', '北', '朝', '鮮', '先', 'よ', '撃', '制', '藻', '屑']
+出力 米国による｢北朝鮮先制攻撃｣は藻屑と消えた<EOS>
+
+入力 ['､', 'が', '国', '世', '界', '子', '主', '沸', '騰', 'す', '部', 'る', 'マ', 'ス', '業', '中', '品', '電', '救', 'ホ']
+出力 中国スマホが救世主､沸騰する電子部品業界<EOS>
+```
 
 ## 終わりに
+最初、単語粒度でやっていたんですが、入力があまりにも高次元になってしまったこと、コンピュータリソース的に学習が難しいという背景がございました。  
+そのため、何度か手法を整理したのですが、charactor粒度はあまり面白くないですね。  
+
+RNNで最大の課題だなと感じるのが、オンメモリで密行列を保持するのが難しいことです。なんらかの方法で安定化させる方法が求めらていますが、なんかうまい方法ないでしょうかね。
