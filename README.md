@@ -12,6 +12,9 @@
 - [ORDER MATTERS: SEQUENCE TO SEQUENCE FOR SETS](https://arxiv.org/pdf/1511.06391.pdf)
 
 ## 文字列を破壊して並びなおす
+- 東洋経済さんのオンラインコンテンツの記事タイトルを利用します
+- char粒度で分解してBag of Wordsのようなベクトル表現に変換します
+- EncoderのRNNの入力を行い、Decoderで元の並びを推定します
 
 ## ネットワーク
 
