@@ -26,9 +26,10 @@ input_tensor = Input( shape=(1, 3135) )
 
 enc = input_tensor
 enc = Flatten()(enc)
-#enc = Dense(3135, activation='relu')(enc)
 enc = RepeatVector(30)(enc)
-enc = GRU(256, return_sequences=True)(enc)
+enc = GRU(256, dropout=0.15, recurrent_dropout=0.1, return_sequences=True)(enc)
+enc = TD(Dense(3000, activation='relu'))(enc)
+enc = Dropout(0.25)(enc)
 
 dec = Bi(GRU(512, dropout=0.30, recurrent_dropout=0.25, return_sequences=True))(enc)
 dec = TD(Dense(3000, activation='relu'))(dec)
@@ -59,7 +60,7 @@ if '--train' in sys.argv:
     model.load_weights(model_file)
   for i in range(500):
     X, y = [], []
-    for name in random.sample(glob.glob("dataset/*"), 50):
+    for name in random.sample(sorted(glob.glob("dataset/*"))[:50], 50):
       count += 1
       chunk = pickle.loads(gzip.decompress(open(name, "rb").read()))
 
@@ -71,10 +72,9 @@ if '--train' in sys.argv:
 
     batch_size = random.randint(64, 80)
     model.optimizer = random.choice([Adam(), SGD()])
-    model.fit(X, y, epochs=30, batch_size=batch_size)
+    model.fit(X, y, epochs=100, batch_size=batch_size)
     if count%1 == 0:
       model.save_weights("models/{:09d}.h5".format(count))
-      break
 
 if '--predict' in sys.argv:
   char_index = json.loads(open('char_index.json').read())
