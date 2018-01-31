@@ -37,6 +37,10 @@ decode  = TD(Dense(3135, activation='softmax'))(dec)
 model = Model(inputs=input_tensor, outputs=decode)
 model.compile(loss='categorical_crossentropy', optimizer='adam')
 ```
+<p align="center">
+  <img width="550px" src="https://user-images.githubusercontent.com/4949982/35622900-dc2ad6ba-06cc-11e8-97a6-fad565818fc9.png">
+</p>
+<div align="center"> 図1. 作成したEncoder-Decoderのソートタスク </div>
 
 ## 前処理
 **東洋経済さんのコンテンツをスクレイピング**
