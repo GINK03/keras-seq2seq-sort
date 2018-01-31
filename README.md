@@ -24,18 +24,17 @@
 ```python
 enc = input_tensor
 enc = Flatten()(enc)
-enc = RepeatVector(5)(enc)
-enc = GRU(256, return_sequences=True)(enc)
+enc = RepeatVector(30)(enc)
+enc = GRU(256, dropout=0.15, recurrent_dropout=0.1, return_sequences=True)(enc)
+enc = TimeDistribute(Dense(3000, activation='relu'))(enc)
+enc = Dropout(0.25)(enc)
 
-dec = Bidirection(GRU(512, dropout=0.30, recurrent_dropout=0.25, return_sequences=True))(enc)
+dec = Bidirect(GRU(512, dropout=0.30, recurrent_dropout=0.25, return_sequences=True))(enc)
 dec = TimeDistribute(Dense(3000, activation='relu'))(dec)
 dec = Dropout(0.5)(dec)
 dec = TimeDistribute(Dense(3000, activation='relu'))(dec)
 dec = Dropout(0.1)(dec)
-decode  = TD(Dense(3135, activation='softmax'))(dec)
-
-model = Model(inputs=input_tensor, outputs=decode)
-model.compile(loss='categorical_crossentropy', optimizer='adam')
+decode  = TimeDistribute(Dense(3135, activation='softmax'))(dec)
 ```
 <p align="center">
   <img width="550px" src="https://user-images.githubusercontent.com/4949982/35622900-dc2ad6ba-06cc-11e8-97a6-fad565818fc9.png">
