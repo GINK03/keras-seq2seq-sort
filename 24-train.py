@@ -80,7 +80,7 @@ if '--predict' in sys.argv:
   char_index = json.loads(open('char_index.json').read())
   char_index["<EOS>"] = len(char_index)
   index_char = {index:char for char, index in char_index.items()}
-  model_file = sorted(glob.glob('models/*.h5')).pop() 
+  model_file = sorted(glob.glob('models/000000350.h5')).pop() 
   print(model_file)
   model.load_weights(model_file)
 
